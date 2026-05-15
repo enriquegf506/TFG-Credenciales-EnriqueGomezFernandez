@@ -18,7 +18,7 @@ El sistema requiere configurar los siguientes servicios externos:
 
 ## Despliegue del Contrato Inteligente
 
-1. Suba el archivo `CredentialSystem.sol` a [Remix IDE](https://remix.ethereum.org/).
+1. Suba el archivo `academicCredentialRegistry.sol` a [Remix IDE](https://remix.ethereum.org/).
 2. Compile y despliegue en la red **Sepolia** usando "Injected Provider".
 3. **Copie la dirección del contrato** resultante para el siguiente paso.
 
@@ -45,7 +45,7 @@ VITE_PINATA_SECRET_KEY=tu_api_secret_aqui
 
 VITE_WEB3MODAL_PROJECT_ID=tu_project_id_aqui
 ```
-**Nota:** Si realiza modificaciones en el código fuente de Solidity, recuerde actualizar el archivo \texttt{contractABI.json} dentro de la carpeta \texttt{/src/web3/} del proyecto frontend.
+**Nota:** Si realiza modificaciones en el código fuente de Solidity, recuerde actualizar el archivo `contractABI.json` dentro de la carpeta `/src/web3/` del proyecto frontend.
 
 ## Ejecución
 
