@@ -27,7 +27,7 @@ El sistema requiere configurar los siguientes servicios externos:
 Ejecute los siguientes comandos en su terminal para preparar el proyecto:
 ```bash
 # Clonar el repositorio
-git clone [https://github.com/tu-usuario/tu-proyecto.git](https://github.com/tu-usuario/tu-proyecto.git)
+git clone git@github.com:enriquegf506/TFG-Credenciales-EnriqueGomezFernandez.git
 cd tu-proyecto
 
 # Instalar dependencias
@@ -45,6 +45,8 @@ VITE_PINATA_SECRET_KEY=tu_api_secret_aqui
 
 VITE_WEB3MODAL_PROJECT_ID=tu_project_id_aqui
 ```
+**Nota:** Si realiza modificaciones en el código fuente de Solidity, recuerde actualizar el archivo \texttt{contractABI.json} dentro de la carpeta \texttt{/src/web3/} del proyecto frontend.
+
 ## Ejecución
 
 Para iniciar la aplicación en su navegador:
