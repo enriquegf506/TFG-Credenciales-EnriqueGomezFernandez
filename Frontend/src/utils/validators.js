@@ -5,19 +5,6 @@
 // ==============================================================
 
 /**
- * Valida el formato de un CID de IPFS.
- * Soporta CIDv0 (Qm..., 46 caracteres) y CIDv1 (bafy..., longitud >=50).
- * @param {string} cid - El CID a validar.
- * @returns {boolean} true si el formato es correcto.
- */
-export const isValidCID = (cid) => {
-  if (!cid || typeof cid !== 'string') return false;
-  if (cid.startsWith('Qm') && cid.length === 46) return true;
-  if (cid.startsWith('b') && cid.length >= 50) return true;
-  return false;
-};
-
-/**
  * Valida una dirección Ethereum usando expresión regular.
  * Formato: 0x seguido de 40 caracteres hexadecimales.
  * @param {string} address - Dirección a validar.

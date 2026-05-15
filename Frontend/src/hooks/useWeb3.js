@@ -5,13 +5,14 @@
 // Proporciona la instancia del contrato inteligente y los roles del usuario.
 // ===============================================================
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { ethers } from 'ethers';
 import { 
   createWeb3Modal, 
   defaultConfig, 
   useWeb3ModalProvider, 
-  useWeb3ModalAccount 
+  useWeb3ModalAccount ,
+  useDisconnect
 } from '@web3modal/ethers/react';
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from '../services/web3/config';
 import { readOnlyContract } from '../services/web3/readOnlyProvider';
@@ -49,6 +50,7 @@ export const useWeb3 = () => {
   // Hooks de Web3Modal para acceder al estado de la wallet conectada
   const { address, isConnected } = useWeb3ModalAccount();   // Dirección y estado de conexión
   const { walletProvider } = useWeb3ModalProvider();        // Proveedor EIP-1193 (inyectado por la wallet)
+  const { disconnect } = useDisconnect();
 
   // Estados internos del hook
   const [contract, setContract] = useState(null);           // Instancia del contrato (firmada)
@@ -99,6 +101,57 @@ export const useWeb3 = () => {
   }, [isConnected, walletProvider, address]);
 
   /**
+   * Desconecta la wallet actual y limpia toda la caché de Web3Modal.
+   * 
+   * Distingue entre dos tipos de wallets:
+   * - Wallets inyectadas (MetaMask, Coinbase, etc.): utiliza `wallet_revokePermissions`
+   *   para forzar el cierre de sesión y revocar los permisos de la dApp.
+   * - WalletConnect: llama al método `disconnect()` para destruir la sesión activa.
+   * 
+   * Además, elimina todas las claves de almacenamiento local relacionadas con
+   * Web3Modal, WalletConnect y wagmi, y finalmente recarga la página.
+   * 
+   * @async
+   * @function disconnectAndClear
+   * @returns {Promise<void>}
+   */
+  const disconnectAndClear = useCallback(async () => {
+    // Detectar si la wallet es inyectada (MetaMask, Coinbase...) o WalletConnect
+    const isInjected = walletProvider && walletProvider === window.ethereum;
+
+    if (isInjected) {
+      // Wallets inyectadas: revocar permisos para forzar la desconexión
+      try {
+        await window.ethereum.request({
+          method: 'wallet_revokePermissions',
+          params: [{ eth_accounts: {} }]
+        });
+      } catch (_) {
+        // Si falla, se ignora y se continúa con la limpieza
+      }
+    } else {
+      // WalletConnect: desconectar la sesión activa
+      try { 
+        await disconnect(); 
+      } catch (_) {}
+    }
+
+    // Limpiar todas las claves de almacenamiento local relacionadas con la conexión
+    Object.keys(localStorage).forEach(key => {
+      if (
+        key.startsWith('wc@')  ||      // WalletConnect
+        key.startsWith('@w3m') ||      // Web3Modal
+        key.startsWith('W3M')  ||      // Web3Modal (variante)
+        key.startsWith('wagmi')        // wagmi (si se usa internamente)
+      ) {
+        localStorage.removeItem(key);
+      }
+    });
+
+    // Recargar la página para reiniciar completamente el estado
+    window.location.reload();
+  }, [disconnect, walletProvider]);
+  /**
    * Ejecuta `loadBlockchainData` cada vez que cambian las dependencias.
    * Esto garantiza que los roles se actualicen al conectar/desconectar la wallet
    * o al cambiar de cuenta.
@@ -107,6 +160,7 @@ export const useWeb3 = () => {
     loadBlockchainData();
   }, [loadBlockchainData]);
 
+
   return {
     userAddress: address,           // Dirección de la wallet (undefined si no conectada)
     isConnected,                    // Booleano: hay wallet conectada
@@ -114,6 +168,7 @@ export const useWeb3 = () => {
     readOnlyContract,               // Instancia de solo lectura (importada externamente)
     isOwner,                        // Booleano: el usuario es el owner del contrato
     isIssuer,                       // Booleano: el usuario es emisor autorizado
-    issuerInstitution               // Objeto { name, country } de la institución (si aplica)
+    issuerInstitution,              // Objeto { name, country } de la institución (si aplica)
+    disconnectAndClear
   };
 };

@@ -5,14 +5,15 @@
 // y qué permisos tiene (owner, emisor autorizado, o solo verificador público).
 // ===============================================================
 
-import React from 'react';
+import { React, useEffect } from 'react';
 import { useWeb3 } from '../../hooks/useWeb3';                    // Hook con la información de conexión y roles
-import { useWeb3Modal } from '@web3modal/ethers/react';          // Hook para abrir el modal de selección de wallet
+import { useWeb3Modal, useDisconnect } from '@web3modal/ethers/react';          // Hook para abrir el modal de selección de wallet
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import AdminPanel from './AdminPanel';
 import IssuerPanel from './IssuerPanel';
 import VerifierTool from './VerifierTool';
+
 
 const Dashboard = () => {
   // -------------------------------------------------------------
@@ -23,7 +24,7 @@ const Dashboard = () => {
   // - isOwner:          true si la dirección es la del propietario del contrato
   // - isIssuer:         true si la dirección está autorizada para emitir credenciales
   // - issuerInstitution: objeto con nombre y país de la institución a la que pertenece el emisor
-  const { isConnected, userAddress, isOwner, isIssuer, issuerInstitution } = useWeb3();
+  const { isConnected, userAddress, isOwner, isIssuer, issuerInstitution, disconnectAndClear } = useWeb3();
   // -------------------------------------------------------------
   // 2. Hook para abrir el modal de selección de wallet (Web3Modal)
   // -------------------------------------------------------------
@@ -130,10 +131,10 @@ const Dashboard = () => {
           <Button 
             variant="ghost" 
             size="sm" 
-            onClick={() => open()} 
+            onClick={disconnectAndClear} 
             className="text-[10px] uppercase tracking-[0.3em] text-slate-300 hover:text-blue-600 transition-all hover:bg-transparent"
           >
-            [ Cambiar Wallet ]
+            [ DESCONECTAR WALLET ]
           </Button>
         </div>
       </div>

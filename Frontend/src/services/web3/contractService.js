@@ -242,19 +242,3 @@ export const getInstitutionByIssuer = async (contract, issuerAddress) => {
     handleContractError(error, 'Error al obtener institución del emisor');
   }
 };
-
-/**
- * Obtiene el número total de credenciales emitidas hasta el momento.
- * @param {ethers.Contract} contract - Instancia del contrato (firmada o solo lectura).
- * @returns {Promise<number>} - Cantidad de credenciales.
- * @throws {Error} Si el contrato no está disponible o la consulta falla.
- */
-export const getCredentialCount = async (contract) => {
-  if (!contract) throw new Error('Contrato no disponible');
-  try {
-    const count = await contract.getCredentialCount();
-    return Number(count);
-  } catch (error) {
-    handleContractError(error, 'Error al obtener número de credenciales');
-  }
-};
